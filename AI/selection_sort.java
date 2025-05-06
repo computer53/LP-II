@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
-public class selection_sort{
-    // Selection Sort function to sort in ascending order
+public class SelectionSort {
+    // Selection Sort function to sort in ascending order and show every iteration
     public static void sel(int[] a) {
         for (int i = 0; i < a.length - 1; i++) {
             int minPosition = i;  // Find the minimum value
@@ -10,10 +10,18 @@ public class selection_sort{
                     minPosition = j;
                 }
             }
+            
             // Swap if minPosition is not the current index i
             int temp = a[minPosition];
             a[minPosition] = a[i];
             a[i] = temp;
+            
+            // Show the array after each iteration
+            System.out.print("Iteration " + (i + 1) + ": ");
+            for (int k = 0; k < a.length; k++) {
+                System.out.print(a[k] + " ");
+            }
+            System.out.println();  // For a newline after printing the array
         }
         
         // Print the sorted array
@@ -47,6 +55,6 @@ public class selection_sort{
 
     public static void main(String[] args) {
         int[] a = Arr();  // Get the array from user input
-        sel(a);            // Sort and display the array
+        sel(a);            // Sort and display the array with iterations
     }
 }
