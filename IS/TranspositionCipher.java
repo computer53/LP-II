@@ -1,91 +1,93 @@
 import java.util.Scanner;
 
-public class TranspositionCipher {
-
-    // Encryption method
-    public static String encryptMessage(String plaintext, int key) {
-        String[] ciphertext = new String[key];
-        for (int i = 0; i < key; i++) {
-            ciphertext[i] = "";
-        }
-
-        // Perform encryption
-        for (int column = 0; column < key; column++) {
-            int pointer = column;
-            while (pointer < plaintext.length()) {
-                ciphertext[column] += plaintext.charAt(pointer);
-                pointer += key;
-            }
-        }
-
-        // Combine all columns into a single string
-        StringBuilder encryptedText = new StringBuilder();
-        for (String s : ciphertext) {
-            encryptedText.append(s);
-        }
-
-        return encryptedText.toString();
-    }
-
-    // Decryption method
-    public static String decryptMessage(int key, String message) {
-        int numOfColumns = (int) Math.ceil((double) message.length() / key);
-        int numOfRows = key;
-        int numOfShadedBoxes = (numOfColumns * numOfRows) - message.length();
-
-        // Prepare an array for the columns
-        String[] text = new String[numOfColumns];
-        for (int i = 0; i < numOfColumns; i++) {
-            text[i] = "";
-        }
-
-        int column = 0;
-        int row = 0;
-
-        // Decrypt the message
-        for (int i = 0; i < message.length(); i++) {
-            text[column] += message.charAt(i);
-            column++;
-
-            if (column == numOfColumns || (column == numOfColumns - 1 && row >= numOfRows - numOfShadedBoxes)) {
-                column = 0;
-                row++;
-            }
-        }
-
-        // Combine the columns into the decrypted message
-        StringBuilder decryptedText = new StringBuilder();
-        for (String s : text) {
-            decryptedText.append(s);
-        }
-
-        return decryptedText.toString();
-    }
-
+public class RailFenceCipher {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        // Encryption
-        System.out.print("Enter your plain text: ");
-        String plaintext = scanner.nextLine();
-
-        System.out.print("Enter key: ");
+        System.out.println("Enter Input message:");
+        String name = scanner.next();
+        System.out.println("Enter Number  of Rails:");
         int key = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        int len = name.length();
+        char[][] matrix = new char[30][30];
+        
+        for (int i = 0; i < key; i++) {
+            for (int j = 0; j < len; j++) {
+                matrix[i][j] = '*';
+            }
+        }
+        
+        int k = 0, l = 0, temp = 0, flag = 0;
+        for (int i = 0; i < len; i++) {
+            flag = 0;
+            temp = 0;
 
-        String encryptedMessage = encryptMessage(plaintext, key);
-        System.out.println("Encrypted message: " + encryptedMessage);
+            if (k == 0 || k == key - 1) {
+                k = k * (-1);
+            }
 
-        // Decryption
-        System.out.print("Enter cipher text: ");
-        String cipherText = scanner.nextLine();
+            if (k < 0) {
+                temp = k;
+                k = k * (-1);
+                flag = 1;
+            }
+            matrix[k][i] = name.charAt(l);
+            if (flag == 1) {
+                k = temp;
+            }
+            l++;
+            k++;
+        }
+        
+        System.out.println("\nRailfence Matrix is: ");
+        for (int i = 0; i < key; i++) {
+            for (int j = 0; j < len; j++) {
+                System.out.print(" " + matrix[i][j]);
+            }
+            System.out.println();
+        }
 
-        System.out.print("Enter key for decryption: ");
-        int decryptionKey = scanner.nextInt();
+        char[] str = new char[100];
+        int glo = 0;
+        for (int i = 0; i < key; i++) {
+            for (int j = 0; j < len; j++) {
+                if (matrix[i][j] != '*') {
+                    str[glo++] = matrix[i][j];
+                }
+            }
+        }
 
-        String decryptedMessage = decryptMessage(decryptionKey, cipherText);
-        System.out.println("Decrypted message: " + decryptedMessage);
+        System.out.println("\nOriginal message : ");
+        System.out.println(name);
+        System.out.println("\nEncrypted message : ");
+        System.out.println(str);
 
+        char[] dstr = new char[100];
+        int glob = 0;
+        System.out.println("\nDecrypted message : ");
+        int p = 0, temp1 = 0;
+        for (int i = 0; i < len; i++) {
+            temp1 = 0;
+            flag = 0;
+            if (p == 0 || p == key - 1) {
+                p = p * (-1);
+            }
+            if (p < 0) {
+                temp1 = p;
+                p = p * (-1);
+                flag = 1;
+            }
+            char ct = matrix[p][i];
+            dstr[glob++] = ct;
+
+            if (flag == 1) {
+                p = temp1;
+            }
+            p++;
+        }
+        for (int i = 0; i < len; i++) {
+            System.out.print(dstr[i]);
+        }
+        System.out.println();
         scanner.close();
     }
 }
