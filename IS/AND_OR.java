@@ -1,17 +1,16 @@
-import java.util.Scanner;
-public class AND_OR
-{
-    public static void main(String args[])
-    {
-        String s="Hello World";
-        String result="";
-        String resul1="";
-        for(int i=0;i<s.length();i++)
-        {
-            result+=(char)(s.charAt(i)&127);
-            resul1+=(char)(s.charAt(i)^127);
+public class new1{
+    public static void main(String[] args) {
+        String str = "Hello World";
+
+        System.out.println("Character | ASCII | AND with 127 | XOR with 127");
+        System.out.println("----------------------------------------------");
+
+        for (char ch : str.toCharArray()) {
+            int asciiValue = (int) ch; 
+            int andResult = ch & 127;   
+            int xorResult = ch ^ 127;   
+
+            System.out.printf("    %c     |  %3d  |     %3d     |     %3d\n", ch, asciiValue, andResult, xorResult);
         }
-        System.out.println(result);
-        System.out.println(resul1);
     }
 }
