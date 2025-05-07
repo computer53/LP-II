@@ -1,42 +1,46 @@
-import java.util.Scanner;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-
-public class DES {
-    public static void main(String[] args) {
-        try {
-            Scanner scanner = new Scanner(System.in);
-
-            // Get plaintext from the user
-            System.out.print("Enter the plaintext: ");
-            String plainText = scanner.nextLine();
-
-            // Get key from the user
-            System.out.print("Enter the 8-byte key for DES: ");
-            String keyString = scanner.nextLine();
-
-            byte[] keyData = keyString.getBytes();
-            SecretKeySpec key = new SecretKeySpec(keyData, "DES");
-            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] encryptedData = cipher.doFinal(plainText.getBytes());
-            System.out.println("Encrypted: " + bytesToHex(encryptedData));
-
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] decryptedData = cipher.doFinal(encryptedData);
-            System.out.println("Decrypted: " + new String(decryptedData));
-
-            scanner.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(String.format("%02X", b));
-        }
-        return result.toString();
-    }
+import javax.crypto.Cipher; 
+import javax.crypto.KeyGenerator; 
+import javax.crypto.SecretKey; 
+import java.util.Base64; 
+ 
+public class DESAlgorithm { 
+     
+    // Method to generate a secret key 
+    public static SecretKey generateKey() throws Exception { 
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("DES"); 
+        keyGenerator.init(56); // DES uses a 56-bit key 
+        return keyGenerator.generateKey(); 
+    } 
+ 
+    // Method to encrypt text 
+    public static String encrypt(String plainText, SecretKey secretKey) throws Exception { 
+        Cipher cipher = Cipher.getInstance("DES"); 
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey); 
+        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes()); 
+        return Base64.getEncoder().encodeToString(encryptedBytes); 
+    } 
+ 
+    // Method to decrypt text 
+    public static String decrypt(String encryptedText, SecretKey secretKey) throws Exception { 
+        Cipher cipher = Cipher.getInstance("DES"); 
+        cipher.init(Cipher.DECRYPT_MODE, secretKey); 
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText)); 
+        return new String(decryptedBytes); 
+    } 
+ 
+    public static void main(String[] args) { 
+        try { 
+            String originalText = "Hello, DES Encryption!"; 
+            SecretKey secretKey = generateKey(); 
+             
+            String encryptedText = encrypt(originalText, secretKey); 
+            String decryptedText = decrypt(encryptedText, secretKey); 
+             
+            System.out.println("Original Text: " + originalText); 
+            System.out.println("Encrypted Text: " + encryptedText); 
+            System.out.println("Decrypted Text: " + decryptedText); 
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        } 
+    } 
 }
