@@ -1,72 +1,64 @@
-// Java Program for implementation of RSA Algorithm
-
 import java.math.BigInteger;
+import java.util.Scanner;
 
-class RSA {
+public class RSA {
 
-    // Function to compute base^expo mod m using BigInteger
-    static BigInteger power(BigInteger base, BigInteger expo, BigInteger m) {
-        return base.modPow(expo, m);
+    // Method to compute GCD
+    public static int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return a;
     }
 
-    // Function to find modular inverse of e modulo phi(n)
-    static BigInteger modInverse(BigInteger e, BigInteger phi) {
-        return e.modInverse(phi);
-    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-    // RSA Key Generation
-    static void generateKeys(BigInteger[] keys) {
-        BigInteger p = new BigInteger("7919");
-        BigInteger q = new BigInteger("1009");
-        
-        BigInteger n = p.multiply(q);
-        BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        // 1. Choose two prime numbers (small for simplicity)
+        int p = 3;
+        int q = 11;
 
-        // Choose e, where 1 < e < phi(n) and gcd(e, phi(n)) == 1
-        BigInteger e = BigInteger.ZERO;
-        for (e = new BigInteger("2"); e.compareTo(phi) < 0; e = e.add(BigInteger.ONE)) {
-            if (e.gcd(phi).equals(BigInteger.ONE)) {
+        // 2. Compute n = p * q
+        int n = p * q;
+
+        // 3. Compute phi = (p - 1) * (q - 1)
+        int phi = (p - 1) * (q - 1);
+
+        // 4. Calculate e automatically
+        int e = 2;
+        while (e < phi) {
+            if (gcd(e, phi) == 1) {
+                break;
+            }
+            e++;
+        }
+
+        // 5. Compute d such that (d * e) % phi == 1
+        int d = 0;
+        for (int i = 1; i < phi; i++) {
+            if ((i * e) % phi == 1) {
+                d = i;
                 break;
             }
         }
 
-        // Compute d such that e * d ≡ 1 (mod phi(n))
-        BigInteger d = modInverse(e, phi);
+        System.out.println("Public Key (e, n): (" + e + ", " + n + ")");
+        System.out.println("Private Key (d, n): (" + d + ", " + n + ")");
 
-        keys[0] = e;  // Public Key (e)
-        keys[1] = d;  // Private Key (d)
-        keys[2] = n;  // Modulus (n)
-    }
+        // 6. Get message from user
+        System.out.print("Enter a message (number < " + n + "): ");
+        int msg = sc.nextInt();
 
-    // Encrypt message using public key (e, n)
-    static BigInteger encrypt(BigInteger m, BigInteger e, BigInteger n) {
-        return power(m, e, n);
-    }
+        // 7. Encrypt: c = (msg^e) % n
+        BigInteger C = BigInteger.valueOf(msg).pow(e).mod(BigInteger.valueOf(n));
+        System.out.println("Encrypted message: " + C);
 
-    // Decrypt message using private key (d, n)
-    static BigInteger decrypt(BigInteger c, BigInteger d, BigInteger n) {
-        return power(c, d, n);
-    }
+        // 8. Decrypt: m = (c^d) % n
+        BigInteger M = C.pow(d).mod(BigInteger.valueOf(n));
+        System.out.println("Decrypted message: " + M);
 
-    public static void main(String[] args) {
-        BigInteger[] keys = new BigInteger[3]; // e, d, n
-        
-        // Key Generation
-        generateKeys(keys);
-      
-        System.out.println("Public Key (e, n): (" + keys[0] + ", " + keys[2] + ")");
-        System.out.println("Private Key (d, n): (" + keys[1] + ", " + keys[2] + ")");
-
-        // Message
-        BigInteger M = new BigInteger("123");
-        System.out.println("Original Message: " + M);
-
-        // Encrypt the message
-        BigInteger C = encrypt(M, keys[0], keys[2]);
-        System.out.println("Encrypted Message: " + C);
-
-        // Decrypt the message
-        BigInteger decrypted = decrypt(C, keys[1], keys[2]);
-        System.out.println("Decrypted Message: " + decrypted);
+        sc.close();
     }
 }
